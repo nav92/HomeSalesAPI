@@ -31,12 +31,16 @@ namespace VeArc_HomeSalesAPI.Controllers
         }
 
         [HttpGet("GetAverageDays/{schoolName}/{year}/{month}")]
-        public int GetAverageNumberOfDays(string schoolName, int year, int month)
+        public double GetAverageNumberOfDays(string schoolName, int year, int month)
         {
-            var listOfDates = HomeSalesList.Where(g => DateTime.ParseExact(g.SALEDATE, "MM-dd-yyyy", CultureInfo.InvariantCulture).Year == year && DateTime.ParseExact(g.SALEDATE, "MM-dd-yyyy", CultureInfo.InvariantCulture).Month == month).
-                              Select(g => g.SALEDATE).ToList();
-
-            return listOfDates.Count;
+            var listOfDates = HomeSalesList.Where(g => DateTime.ParseExact(g.SALEDATE, "MM-dd-yyyy", CultureInfo.InvariantCulture).Year == year && DateTime.ParseExact(g.SALEDATE, "MM-dd-yyyy", CultureInfo.InvariantCulture).Month == month && g.SCHOOLDESC.ToUpper() == schoolName.ToUpper()).
+                              Select(g => DateTime.ParseExact(g.SALEDATE, "MM-dd-yyyy", CultureInfo.InvariantCulture)).ToList();
+            if (listOfDates != null && listOfDates.Count() > 0)
+            {
+                double average = listOfDates.Last().Day - listOfDates.First().Day / listOfDates.Count();
+                return average;
+            }
+            else return 0;
         }
 
         [HttpGet]
